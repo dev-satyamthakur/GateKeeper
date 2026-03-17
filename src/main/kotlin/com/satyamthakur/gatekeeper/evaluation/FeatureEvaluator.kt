@@ -15,10 +15,8 @@ class FeatureEvaluator {
 
         // Step 2: deterministic rollout
         val hash = (user.userId + flag.name).hashCode()
-
         val bucket = abs(hash % 100)
 
         return bucket < flag.rolloutPercentage
     }
-
 }
