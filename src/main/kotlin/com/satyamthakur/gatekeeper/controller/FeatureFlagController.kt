@@ -3,6 +3,8 @@ package com.satyamthakur.gatekeeper.controller
 import com.satyamthakur.gatekeeper.model.FeatureFlag
 import com.satyamthakur.gatekeeper.service.FeatureFlagService
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -26,5 +28,15 @@ class FeatureFlagController(
     @GetMapping
     fun getFlags(): List<FeatureFlag> {
         return service.getAllFlags()
+    }
+
+    @PatchMapping("/{name}")
+    fun updateFlag(
+        @PathVariable name: String,
+        @RequestParam enabled: Boolean,
+        @RequestParam rollout: Int
+    ): FeatureFlag {
+
+        return service.updateFlag(name, enabled, rollout)
     }
 }
