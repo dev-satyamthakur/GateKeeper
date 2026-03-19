@@ -6,6 +6,7 @@ data class UserContext(
 
     val country: String? = null,
 
-    val device: String? = null
+    val device: String? = null,
 
+    val email: String? = null
 )

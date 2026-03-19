@@ -5,6 +5,7 @@ import com.satyamthakur.gatekeeper.evaluation.FeatureEvaluator
 import com.satyamthakur.gatekeeper.model.FeatureFlag
 import com.satyamthakur.gatekeeper.model.UserContext
 import com.satyamthakur.gatekeeper.repository.FeatureFlagRepository
+import com.satyamthakur.gatekeeper.repository.FlagRuleRepository
 import com.satyamthakur.gatekeeper.events.FlagUpdatePublisher
 import org.springframework.stereotype.Service
 
@@ -13,7 +14,8 @@ class FeatureFlagService(
     private val repository: FeatureFlagRepository,
     private val evaluator: FeatureEvaluator,
     private val cache: RedisCacheService,
-    private val publisher: FlagUpdatePublisher
+    private val publisher: FlagUpdatePublisher,
+    private val ruleRepository: FlagRuleRepository
 ) {
     fun createFlag(name: String, rollout: Int): FeatureFlag {
         val flag = FeatureFlag(
@@ -33,16 +35,15 @@ class FeatureFlagService(
     }
 
     fun evaluate(flagName: String, user: UserContext): Boolean {
-        val cachedFlag = cache.getFlag(flagName)
-        val flag = if (cachedFlag != null) {
-            cachedFlag
-        } else {
-            val dbFlag = repository.findByName(flagName) ?: return false
-            cache.setFlag(dbFlag)
-            dbFlag
-        }
 
-        return evaluator.isEnabled(flag, user)
+        val cachedFlag = cache.getFlag(flagName)
+    
+        val flag = cachedFlag ?: repository.findByName(flagName)
+            ?: return false
+    
+        val rules = ruleRepository.findByFlagName(flagName)
+    
+        return evaluator.isEnabled(flag, user, rules)
     }
 
     fun updateFlag(name: String, enabled: Boolean, rollout: Int): FeatureFlag {

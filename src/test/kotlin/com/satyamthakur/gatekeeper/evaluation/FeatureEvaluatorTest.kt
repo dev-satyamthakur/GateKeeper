@@ -2,12 +2,13 @@ package com.satyamthakur.gatekeeper.evaluation
 
 import com.satyamthakur.gatekeeper.model.FeatureFlag
 import com.satyamthakur.gatekeeper.model.UserContext
+import com.satyamthakur.gatekeeper.rules.RuleFactory
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class FeatureEvaluatorTest {
 
-    private val evaluator = FeatureEvaluator()
+    private val evaluator = FeatureEvaluator(RuleFactory())
 
     @Test
     fun `20 percent rollout should enable feature for around 20 out of 100 users`() {
@@ -23,7 +24,7 @@ class FeatureEvaluatorTest {
 
         val enabledCount = randomUserIds
             .count { userId ->
-                evaluator.isEnabled(flag, UserContext(userId = userId))
+                evaluator.isEnabled(flag, UserContext(userId = userId), emptyList())
             }
 
         println("Ran $enabledCount times")
