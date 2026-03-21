@@ -1,0 +1,25 @@
+type Query {
+    flags: [FeatureFlag]
+    evaluateFlag(flag: String!, userId: String!, country: String, device: String, email: String): Boolean
+}
+
+type Mutation {
+    createFlag(name: String!, rollout: Int!): FeatureFlag
+    updateFlag(name: String!, enabled: Boolean!, rollout: Int!): FeatureFlag
+    createRule(flagName: String!, attribute: String!, operator: String!, value: String!): FlagRule
+}
+
+type FeatureFlag {
+    id: ID
+    name: String
+    enabled: Boolean
+    rolloutPercentage: Int
+}
+
+type FlagRule {
+    id: ID
+    flagName: String
+    attribute: String
+    operator: String
+    value: String
+}
